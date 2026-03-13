@@ -10,40 +10,51 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ControllerTest {
 
     @Test
-    void controllerDeberiaCrearTarea() {
+    void crearDebeRetornarTareaCreada() {
 
         Gestor gestor = new Gestor();
         Controller controller = new Controller(gestor);
 
-        Tarea tarea = new Tarea(0,"Controller","2026","Alta");
+        ResponseEntity<Tarea> response =
+                controller.crear(new Tarea(0,"Controller","2026","Alta"));
 
-        ResponseEntity<Tarea> respuesta = controller.crear(tarea);
-
-        Tarea creada = respuesta.getBody();
-
-        assertNotNull(creada);
-        assertEquals("Controller", creada.getDescripcion());
-        assertEquals(1, creada.getId());
+        assertEquals(200, response.getStatusCodeValue());
+        assertNotNull(response.getBody());
+        assertEquals("Controller", response.getBody().getDescripcion());
     }
 
     @Test
-    void controllerDeberiaListarTareas() {
+    void listarDebeRetornarListaDeTareas() {
 
         Gestor gestor = new Gestor();
         Controller controller = new Controller(gestor);
 
         controller.crear(new Tarea(0,"A","2026","Alta"));
 
-        ResponseEntity<List<Tarea>> respuesta = controller.listar();
+        ResponseEntity<List<Tarea>> response = controller.listar();
 
-        List<Tarea> lista = respuesta.getBody();
-
-        assertNotNull(lista);
-        assertEquals(1, lista.size());
+        assertEquals(1, response.getBody().size());
+        assertEquals("A", response.getBody().get(0).getDescripcion());
     }
 
     @Test
-    void controllerDeberiaEliminarTarea() {
+    void completarDebeRetornarMensajeCorrecto() {
+
+        Gestor gestor = new Gestor();
+        Controller controller = new Controller(gestor);
+
+        Tarea tarea = controller
+                .crear(new Tarea(0,"Test","2026","Alta"))
+                .getBody();
+
+        ResponseEntity<String> response =
+                controller.completar(tarea.getId());
+
+        assertEquals("Tarea completada", response.getBody());
+    }
+
+    @Test
+    void eliminarDebeRetornarMensajeCorrecto() {
 
         Gestor gestor = new Gestor();
         Controller controller = new Controller(gestor);
@@ -52,49 +63,31 @@ public class ControllerTest {
                 .crear(new Tarea(0,"Eliminar","2026","Alta"))
                 .getBody();
 
-        controller.eliminar(tarea.getId());
+        ResponseEntity<String> response =
+                controller.eliminar(tarea.getId());
 
-        List<Tarea> lista = controller.listar().getBody();
-
-        assertEquals(0, lista.size());
+        assertEquals("Tarea eliminada", response.getBody());
     }
 
     @Test
-    void controllerDebeCompletarTarea() {
-
-        Gestor gestor = new Gestor();
-        Controller controller = new Controller(gestor);
-
-        Tarea tarea = controller
-                .crear(new Tarea(0,"Completar","2026","Alta"))
-                .getBody();
-
-        controller.completar(tarea.getId());
-
-        List<Tarea> lista = controller.listar().getBody();
-
-        assertTrue(lista.get(0).isCompletada());
-    }
-
-    @Test
-    void controllerEliminarTareaInexistenteDebeLanzarError() {
-
-        Gestor gestor = new Gestor();
-        Controller controller = new Controller(gestor);
-
-        assertThrows(RuntimeException.class, () -> {
-            controller.eliminar(999);
-        });
-    }
-
-    @Test
-    void controllerCompletarTareaInexistenteDebeLanzarError() {
+    void completarTareaInexistenteDebeLanzarError() {
 
         Gestor gestor = new Gestor();
         Controller controller = new Controller(gestor);
 
         assertThrows(RuntimeException.class, () -> {
             controller.completar(999);
+        });
+    }
+
+    @Test
+    void eliminarTareaInexistenteDebeLanzarError() {
+
+        Gestor gestor = new Gestor();
+        Controller controller = new Controller(gestor);
+
+        assertThrows(RuntimeException.class, () -> {
+            controller.eliminar(999);
         });
     }
 }
