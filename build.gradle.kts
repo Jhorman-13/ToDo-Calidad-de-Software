@@ -31,10 +31,18 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
+    // Librerías base para Cucumber y JUnit
+    testImplementation("io.cucumber:cucumber-java:7.15.0")
+    testImplementation("io.cucumber:cucumber-junit:7.15.0")
+    testImplementation("junit:junit:4.13.2")
+
+    testRuntimeOnly("org.junit.vintage:junit-vintage-engine")
+
 }
 
 tasks.test {
     useJUnitPlatform()
+    systemProperty("file.encoding", "UTF-8")
 }
 
 application {
@@ -58,4 +66,10 @@ pitest {
     threads.set(4)
     outputFormats.set(listOf("HTML"))
     timestampedReports.set(false)
+}
+
+
+tasks.register<Test>("acceptanceTest") { useJUnitPlatform()
+    description = "Runs Cucumber acceptance tests."
+    group = "verification"
 }

@@ -5,7 +5,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class GestorTest {
+ class GestorTest {
 
     @Test
     void gestorDeberiaCrearTarea() {
@@ -13,11 +13,11 @@ public class GestorTest {
         Gestor gestor = new Gestor();
 
         Tarea tarea = gestor.crear(
-                new Tarea(0,"Test","2026","Alta")
+                new Tarea(0,"Test1","2026","Alta")
         );
 
         assertEquals(1, tarea.getId());
-        assertEquals("Test", tarea.getDescripcion());
+        assertEquals("Test1", tarea.getDescripcion());
         assertFalse(tarea.isCompletada());
     }
 

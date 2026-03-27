@@ -15,6 +15,7 @@ public class TareaTest {
         assertEquals("2026", tarea.getFecha());
         assertEquals("Alta", tarea.getPrioridad());
         assertFalse(tarea.isCompletada());
+
     }
 
     @Test
