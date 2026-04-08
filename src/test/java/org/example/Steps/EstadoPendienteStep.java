@@ -28,7 +28,7 @@ public class EstadoPendienteStep {
 
     @And("el estado de la tarea recién creada debe ser exactamente {string}")
     public void verificarEstadoInicial(String estadoEsperado) {
-        // En tu código, si isCompletada() es falso, significa que está "Pendiente"
+            // Verificamos que el estado de la tarea recién creada sea "pendiente"
         assertFalse("La tarea debería estar pendiente (completada = false)", tareaRecienCreada.isCompletada());
     }
 }

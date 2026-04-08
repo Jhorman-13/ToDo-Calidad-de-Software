@@ -21,7 +21,7 @@ public class IdUnicoStep {
         // Instanciamos el objeto Tarea (el ID 0 se sobrescribe adentro de tu Gestor)
         Tarea nuevaTarea = new Tarea(0, descripcion, "2026-04-08", prioridad);
 
-        // Usamos tu método real 'crear', que además ya nos devuelve la tarea guardada
+        // Se usa el metodo real 'crear' para obtener la tarea con el ID asignado
         primeraTarea = gestor.crear(nuevaTarea);
     }
 

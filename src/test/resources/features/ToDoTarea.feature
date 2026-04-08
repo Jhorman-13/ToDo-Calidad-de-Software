@@ -6,14 +6,20 @@ Feature: crear una nueva tarea
     Then el sistema debe mostrar un mensaje confirmando que la tarea fue creada
     And la tarea "Tarea de calculo" debe aparecer en el listado de tareas pendientes
       # --- Criterio 6: Descripción vacia ---
+
+  Scenario: Crear una tarea con una descripción
+    Given que el usuario ha iniciado el sistema y está en la sección del menú crear tarea
+    When Se ingresa la descripción "a", la fecha "2026-04-08" y la prioridad "Media"
+    Then el sistema debe confirmar que la tarea fue creada exitosamente
+
     Scenario: Crear una nueva tarea sin ingresar la descripción
       Given que el usuario ha iniciado el sistema y está en la sección del menú crear tarea
-      When Se ingresa la fecha "2026-04-08" y la prioridad "Media" sin ingresar la descripción
+      When Se ingresa la descripción "", la fecha "2026-04-08" y la prioridad "Media"
       Then el sistema debe mostrar un mensaje de error indicando que la descripción es obligatoria
 
     Scenario: Crear una nueva tarea sin ingresar la fecha
         Given que el usuario ha iniciado el sistema y está en la sección del menú crear tarea
-        When Se ingresa la descripción "Tarea de calculo" y la prioridad "Media" sin ingresar la fecha
+        When Se ingresa la descripción " " y la prioridad "Media" sin ingresar la fecha
         Then el sistema debe mostrar un mensaje de error indicando que la fecha es obligatoria
 
     Scenario: Crear una nueva tarea sin ingresar la prioridad
