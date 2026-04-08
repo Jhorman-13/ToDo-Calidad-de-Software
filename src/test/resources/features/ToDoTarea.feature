@@ -19,7 +19,7 @@ Feature: crear una nueva tarea
 
     Scenario: Crear una nueva tarea sin ingresar la fecha
         Given que el usuario ha iniciado el sistema y está en la sección del menú crear tarea
-        When Se ingresa la descripción " " y la prioridad "Media" sin ingresar la fecha
+        When Se ingresa la descripción "Tarea de calculo" y la prioridad "Media" sin ingresar la fecha
         Then el sistema debe mostrar un mensaje de error indicando que la fecha es obligatoria
 
     Scenario: Crear una nueva tarea sin ingresar la prioridad
