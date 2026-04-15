@@ -14,7 +14,7 @@ Feature: crear una nueva tarea
 
     Scenario: Crear una nueva tarea sin ingresar la descripción
       Given que el usuario ha iniciado el sistema y está en la sección del menú crear tarea
-      When Se ingresa la descripción "", la fecha "2026-04-08" y la prioridad "Media"
+      When Se ingresa la descripción " ", la fecha "2026-04-08" y la prioridad "Media"
       Then el sistema debe mostrar un mensaje de error indicando que la descripción es obligatoria
 
     Scenario: Crear una nueva tarea sin ingresar la fecha
