@@ -45,9 +45,9 @@ steps:
       tasks: 'pitest'
 
   # Paso 6 (Opcional): Análisis con SonarQube
-   - task: Gradle@2
-     inputs:
-       workingDirectory: '$(projectDir)'
-       gradleWrapperFile: '$(projectDir)/gradlew'
-       gradleOptions: '-Dfile.encoding=UTF-8'
-       tasks: 'sonarqube -Dsonar.projectKey=ToDo -Dsonar.host.url=http://localhost:9000 -Dsonar.token=$(SONAR_TOKEN)'
+  -task: Gradle@2
+    inputs:
+      workingDirectory: '$(projectDir)'
+      gradleWrapperFile: '$(projectDir)/gradlew'
+      gradleOptions: '-Dfile.encoding=UTF-8'
+      tasks: 'sonarqube -Dsonar.projectKey=ToDo -Dsonar.host.url=http://localhost:9000 -Dsonar.token=$(SONAR_TOKEN)'
