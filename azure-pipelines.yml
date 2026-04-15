@@ -51,3 +51,11 @@ steps:
       gradleWrapperFile: '$(projectDir)/gradlew'
       gradleOptions: '-Dfile.encoding=UTF-8'
       tasks: 'sonarqube -Dsonar.projectKey=ToDo -Dsonar.host.url=http://localhost:9000 -Dsonar.token=$(SONAR_TOKEN)'
+    
+  # Paso 7: Publicar el Artefacto (Guardar el .jar de la aplicación)
+  - task: PublishPipelineArtifact@1
+    displayName: 'Guardar Artefacto en Azure'
+    inputs:
+      targetPath: '$(projectDir)/build/libs'
+      artifact: 'LockiToDo-App'
+      publishLocation: 'pipeline'
