@@ -45,7 +45,7 @@ steps:
       tasks: 'pitest'
 
   # Paso 6 (Opcional): Análisis con SonarQube
-  -task: Gradle@2
+  - task: Gradle@2
     inputs:
       workingDirectory: '$(projectDir)'
       gradleWrapperFile: '$(projectDir)/gradlew'
