@@ -31,6 +31,11 @@ dependencies {
     testImplementation("io.cucumber:cucumber-java:7.15.0")
     testImplementation("io.cucumber:cucumber-junit-platform-engine:7.15.0")
     testImplementation("org.junit.platform:junit-platform-suite")
+
+    // Soporte para pruebas antiguas escritas en JUnit 4 y Cucumber
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("io.cucumber:cucumber-junit:7.15.0")
+    testRuntimeOnly("org.junit.vintage:junit-vintage-engine")
 }
 
 // 2. Configuramos la tarea de test para que genere reportes JaCoCo
