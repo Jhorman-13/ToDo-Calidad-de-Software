@@ -84,7 +84,7 @@ steps:
       ping 127.0.0.1 -n 15 > nul
     displayName: "Iniciar Aplicación Spring Boot"
 
-  # Paso 10: Ejecutar prueba de rendimiento con JMeter (¡Usando jmeter.bat!)
+  # Paso 10: Ejecutar prueba de rendimiento con JMeter
   - script: |
       echo "Ejecutando prueba de rendimiento con JMeter..."
       jmeter.bat -n -t "$(jmxFile)" -l "$(resultsFile)" -e -o "$(htmlReport)"
@@ -98,9 +98,10 @@ steps:
       ArtifactName: 'jmeter-report'
       publishLocation: 'Container'
 
-  # Paso 12: Apagar la aplicación (¡Súper importante para liberar el puerto 8080!)
+  # Paso 12: Apagar la aplicación (A prueba de balas)
   - script: |
       echo "Apagando el servidor Spring Boot en el puerto 8080..."
-      for /f "tokens=5" %%a in ('netstat -aon ^| find ":8080" ^| find "LISTENING"') do taskkill /f /pid %%a
+      for /f "tokens=5" %%a in ('netstat -aon ^| find ":8080" ^| find "LISTENING"') do taskkill /f /pid %%a > nul 2>&1
+      exit 0
     displayName: "Apagar Servidor Spring Boot"
-    condition: always() # Esto asegura que se apague incluso si JMeter falla
+    condition: always()
