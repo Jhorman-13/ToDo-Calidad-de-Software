@@ -20,22 +20,28 @@ repositories {
     mavenCentral()
 }
 
+// --- VARIABLES DE VERSIÓN ---
+// Centralizamos las versiones aquí para que SonarQube pase el Quality Gate
+val junitBomVersion = "5.10.0"
+val cucumberVersion = "7.15.0"
+val junit4Version = "4.13.2"
+val pitestJunitPluginVersion = "1.2.1"
+
 dependencies {
 
-    // Spring Boot Web
+    // --- 1. Todas las implementaciones (implementation) ---
     implementation("org.springframework.boot:spring-boot-starter-web")
 
-    // Testing
+    // --- 2. Todas las implementaciones de prueba (testImplementation) ---
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation(platform("org.junit:junit-bom:5.10.0"))
+    testImplementation(platform("org.junit:junit-bom:$junitBomVersion"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("io.cucumber:cucumber-java:$cucumberVersion")
+    testImplementation("io.cucumber:cucumber-junit:$cucumberVersion")
+    testImplementation("junit:junit:$junit4Version")
+
+    // --- 3. Todas las de tiempo de ejecución de prueba (testRuntimeOnly) ---
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-
-    // Librerías base para Cucumber y JUnit
-    testImplementation("io.cucumber:cucumber-java:7.15.0")
-    testImplementation("io.cucumber:cucumber-junit:7.15.0")
-    testImplementation("junit:junit:4.13.2")
-
     testRuntimeOnly("org.junit.vintage:junit-vintage-engine")
 
 }
@@ -61,15 +67,17 @@ sonar {
 pitest {
     targetClasses.set(listOf("org.example.*"))
     targetTests.set(listOf("org.example.*Test"))
-    junit5PluginVersion.set("1.2.1")
+
+    // Inyectamos la variable aquí también
+    junit5PluginVersion.set(pitestJunitPluginVersion)
 
     threads.set(4)
     outputFormats.set(listOf("HTML"))
     timestampedReports.set(false)
 }
 
-
-tasks.register<Test>("acceptanceTest") { useJUnitPlatform()
+tasks.register<Test>("acceptanceTest") {
+    useJUnitPlatform()
     description = "Runs Cucumber acceptance tests."
     group = "verification"
 }

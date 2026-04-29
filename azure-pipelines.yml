@@ -7,6 +7,12 @@ pool:
 variables:
   projectDir: '.'
 
+  #--- Variables agregadas para JMeter ---
+  jmxFile: 'tests/stress_test_pipelines.jmx'
+  resultsFolder: 'results'
+  resultsFile: '$(resultsFolder)/results.jtl'
+  htmlReport: '$(resultsFolder)/html'
+
 steps:
   # Paso 1: Chequear el código
   - checkout: self
@@ -59,3 +65,23 @@ steps:
       targetPath: '$(projectDir)/build/libs'
       artifact: 'LockiToDo-App'
       publishLocation: 'pipeline'
+
+  # Paso 8: Preparar directorios para resultados de JMeter
+  - script: |
+      echo "Preparando carpeta de resultados..."
+      if not exist $(resultsFolder) mkdir $(resultsFolder)
+    displayName: "Preparar directorios JMeter"
+
+  # Paso 9: Ejecutar prueba de rendimiento con JMeter (Modo No-GUI)
+  - script: |
+      echo "Ejecutando prueba de rendimiento con JMeter..."
+      jmeter -n -t "$(jmxFile)" -l "$(resultsFile)" -e -o "$(htmlReport)"
+    displayName: "Ejecución de prueba JMeter"
+
+  # Paso 10: Publicar reporte HTML de JMeter como Artefacto
+  - task: PublishBuildArtifacts@1
+    displayName: "Publicar reporte HTML de JMeter"
+    inputs:
+      PathtoPublish: '$(htmlReport)'
+      ArtifactName: 'jmeter-report'
+      publishLocation: 'Container'

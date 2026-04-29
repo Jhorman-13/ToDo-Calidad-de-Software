@@ -1,13 +1,15 @@
 package org.example;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
- class ControllerTest {
+class ControllerTest {
 
     @Test
     void crearDebeRetornarTareaCreada() {
@@ -16,9 +18,10 @@ import static org.junit.jupiter.api.Assertions.*;
         Controller controller = new Controller(gestor);
 
         ResponseEntity<Tarea> response =
-                controller.crear(new Tarea(0,"Controller","2026","Alta"));
+                controller.crear(new Tarea(0, "Controller", "2026", "Alta"));
 
-        assertEquals(200, response.getStatusCodeValue());
+        // Eliminamos el deprecated y usamos la forma recomendada por Spring
+        assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals("Controller", response.getBody().getDescripcion());
     }
@@ -29,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.*;
         Gestor gestor = new Gestor();
         Controller controller = new Controller(gestor);
 
-        controller.crear(new Tarea(0,"A","2026","Alta"));
+        controller.crear(new Tarea(0, "A", "2026", "Alta"));
 
         ResponseEntity<List<Tarea>> response = controller.listar();
 
@@ -44,7 +47,7 @@ import static org.junit.jupiter.api.Assertions.*;
         Controller controller = new Controller(gestor);
 
         Tarea tarea = controller
-                .crear(new Tarea(0,"Test","2026","Alta"))
+                .crear(new Tarea(0, "Test", "2026", "Alta"))
                 .getBody();
 
         ResponseEntity<String> response =
@@ -60,7 +63,7 @@ import static org.junit.jupiter.api.Assertions.*;
         Controller controller = new Controller(gestor);
 
         Tarea tarea = controller
-                .crear(new Tarea(0,"Eliminar","2026","Alta"))
+                .crear(new Tarea(0, "Eliminar", "2026", "Alta"))
                 .getBody();
 
         ResponseEntity<String> response =
@@ -75,7 +78,8 @@ import static org.junit.jupiter.api.Assertions.*;
         Gestor gestor = new Gestor();
         Controller controller = new Controller(gestor);
 
-        assertThrows(RuntimeException.class, () -> {
+        // Actualizamos a la excepción específica que usamos en Gestor
+        assertThrows(NoSuchElementException.class, () -> {
             controller.completar(999);
         });
     }
@@ -86,7 +90,8 @@ import static org.junit.jupiter.api.Assertions.*;
         Gestor gestor = new Gestor();
         Controller controller = new Controller(gestor);
 
-        assertThrows(RuntimeException.class, () -> {
+        // Actualizamos a la excepción específica que usamos en Gestor
+        assertThrows(NoSuchElementException.class, () -> {
             controller.eliminar(999);
         });
     }
