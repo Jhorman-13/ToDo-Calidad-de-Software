@@ -33,12 +33,14 @@ public class IdUnicoStep {
 
     @Then("el sistema debe haber asignado un ID a la primera tarea")
     public void validarIdPrimeraTarea() {
-        assertTrue("La primera tarea debe tener un ID válido", primeraTarea.getId() != 0);
+        // Corrección: Usamos assertNotEquals en lugar de assertTrue con !=
+        assertNotEquals("La primera tarea debe tener un ID válido", 0, primeraTarea.getId());
     }
 
     @And("el sistema debe haber asignado un ID a la segunda tarea")
     public void validarIdSegundaTarea() {
-        assertTrue("La segunda tarea debe tener un ID válido", segundaTarea.getId() != 0);
+        // Corrección: Usamos assertNotEquals en lugar de assertTrue con !=
+        assertNotEquals("La segunda tarea debe tener un ID válido", 0, segundaTarea.getId());
     }
 
     @And("los IDs generados para ambas tareas deben ser diferentes")

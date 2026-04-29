@@ -2,10 +2,11 @@ package org.example;
 
 import org.junit.jupiter.api.Test;
 import java.util.List;
+import java.util.NoSuchElementException; // Importante agregar esta importación
 
 import static org.junit.jupiter.api.Assertions.*;
 
- class GestorTest {
+class GestorTest {
 
     @Test
     void gestorDeberiaCrearTarea() {
@@ -91,7 +92,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
         Gestor gestor = new Gestor();
 
-        assertThrows(RuntimeException.class, () -> {
+        // Actualizado a la excepción específica
+        assertThrows(NoSuchElementException.class, () -> {
             gestor.completar(999);
         });
     }
@@ -116,7 +118,8 @@ import static org.junit.jupiter.api.Assertions.*;
         Gestor gestor = new Gestor();
 
         Tarea t1 = gestor.crear(new Tarea(0,"A","2026","Alta"));
-        Tarea t2 = gestor.crear(new Tarea(0,"B","2026","Alta"));
+        // Se corrige el Code Smell: se crea la tarea sin guardarla en una variable que no se usa
+        gestor.crear(new Tarea(0,"B","2026","Alta"));
 
         gestor.eliminar(t1.getId());
 
@@ -129,7 +132,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
         Gestor gestor = new Gestor();
 
-        assertThrows(RuntimeException.class, () -> {
+        // Actualizado a la excepción específica
+        assertThrows(NoSuchElementException.class, () -> {
             gestor.eliminar(999);
         });
     }
