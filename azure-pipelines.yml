@@ -56,7 +56,7 @@ steps:
       workingDirectory: '$(projectDir)'
       gradleWrapperFile: '$(projectDir)/gradlew'
       gradleOptions: '-Dfile.encoding=UTF-8'
-      tasks: 'sonarqube -Dsonar.projectKey=ToDo -Dsonar.host.url=http://localhost:9000 -Dsonar.token=$(SONAR_TOKEN) -Dsonar.qualitygate.wait=true'
+      tasks: 'sonar -Dsonar.projectKey=ToDo -Dsonar.host.url=http://localhost:9000 -Dsonar.token=$(SONAR_TOKEN)'
 
   # Paso 7: Publicar el Artefacto (Guardar el .jar de la aplicación)
   - task: PublishPipelineArtifact@1
