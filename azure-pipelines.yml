@@ -72,11 +72,14 @@ steps:
       if not exist $(resultsFolder) mkdir $(resultsFolder)
     displayName: "Preparar directorios JMeter"
 
-  # Paso 9: Ejecutar prueba de rendimiento con JMeter (Modo No-GUI)
+  # Paso 9: Levantar Spring Boot en segundo plano (¡Para que JMeter tenga a quién atacarle!)
   - script: |
-      echo "Ejecutando prueba de rendimiento con JMeter..."
-      jmeter -n -t "$(jmxFile)" -l "$(resultsFile)" -e -o "$(htmlReport)"
-    displayName: "Ejecución de prueba JMeter"
+      echo "Arrancando la aplicación..."
+      start /B java -jar build/libs/ToDo-1.0-SNAPSHOT.jar
+      
+      echo "Esperando 15 segundos a que Spring Boot despierte..."
+      ping 127.0.0.1 -n 15 > nul
+    displayName: "Iniciar Aplicación Spring Boot"
 
   # Paso 10: Publicar reporte HTML de JMeter como Artefacto
   - task: PublishBuildArtifacts@1
