@@ -32,7 +32,7 @@ steps:
       testResultsFiles: '**/build/test-results/test/TEST-*.xml'
       tasks: 'clean build test'
 
-  # Paso 4: Ejecutar pruebas de aceptación (Cucumber) - ¡Sangría corregida!
+  # Paso 4: Ejecutar pruebas de aceptación (Cucumber)
   - task: Gradle@2
     inputs:
       workingDirectory: '$(projectDir)'
@@ -66,13 +66,16 @@ steps:
       artifact: 'LockiToDo-App'
       publishLocation: 'pipeline'
 
-  # Paso 8: Preparar directorios para resultados de JMeter
+  # Paso 8: Preparar directorios (¡Limpieza profunda primero!)
   - script: |
-      echo "Preparando carpeta de resultados..."
-      if not exist $(resultsFolder) mkdir $(resultsFolder)
+      echo "Eliminando resultados de la prueba anterior para que JMeter no llore..."
+      if exist $(resultsFolder) rmdir /S /Q $(resultsFolder)
+      
+      echo "Creando carpeta nueva y limpia..."
+      mkdir $(resultsFolder)
     displayName: "Preparar directorios JMeter"
 
-  # Paso 9: Levantar Spring Boot en segundo plano (¡Para que JMeter tenga a quién atacarle!)
+  # Paso 9: Iniciar Aplicación Spring Boot
   - script: |
       echo "Arrancando la aplicación..."
       start /B java -jar build/libs/ToDo-1.0-SNAPSHOT.jar
@@ -81,10 +84,23 @@ steps:
       ping 127.0.0.1 -n 15 > nul
     displayName: "Iniciar Aplicación Spring Boot"
 
-  # Paso 10: Publicar reporte HTML de JMeter como Artefacto
+  # Paso 10: Ejecutar prueba de rendimiento con JMeter (¡Usando jmeter.bat!)
+  - script: |
+      echo "Ejecutando prueba de rendimiento con JMeter..."
+      jmeter.bat -n -t "$(jmxFile)" -l "$(resultsFile)" -e -o "$(htmlReport)"
+    displayName: "Ejecución de prueba JMeter"
+
+  # Paso 11: Publicar reporte HTML de JMeter como Artefacto
   - task: PublishBuildArtifacts@1
     displayName: "Publicar reporte HTML de JMeter"
     inputs:
       PathtoPublish: '$(htmlReport)'
       ArtifactName: 'jmeter-report'
       publishLocation: 'Container'
+
+  # Paso 12: Apagar la aplicación (¡Súper importante para liberar el puerto 8080!)
+  - script: |
+      echo "Apagando el servidor Spring Boot en el puerto 8080..."
+      for /f "tokens=5" %%a in ('netstat -aon ^| find ":8080" ^| find "LISTENING"') do taskkill /f /pid %%a
+    displayName: "Apagar Servidor Spring Boot"
+    condition: always() # Esto asegura que se apague incluso si JMeter falla
