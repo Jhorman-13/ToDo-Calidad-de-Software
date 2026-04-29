@@ -32,15 +32,15 @@ steps:
       testResultsFiles: '**/build/test-results/test/TEST-*.xml'
       tasks: 'clean build test'
 
-  # Paso 4: Ejecutar pruebas de aceptación (Cucumber)
- # - task: Gradle@2
-  #  inputs:
-   #   workingDirectory: '$(projectDir)'
-    #  gradleWrapperFile: '$(projectDir)/gradlew'
-     # gradleOptions: '-Dfile.encoding=UTF-8'
-     # tasks: 'acceptanceTest'
-      #testResultsFiles: '**/build/test-results/acceptanceTest/TEST-*.xml'
-      #publishJUnitResults: true
+  # Paso 4: Ejecutar pruebas de aceptación (Cucumber) - ¡Sangría corregida!
+  - task: Gradle@2
+    inputs:
+      workingDirectory: '$(projectDir)'
+      gradleWrapperFile: '$(projectDir)/gradlew'
+      gradleOptions: '-Dfile.encoding=UTF-8'
+      tasks: 'acceptanceTest'
+      testResultsFiles: '**/build/test-results/acceptanceTest/TEST-*.xml'
+      publishJUnitResults: true
 
   # Paso 5: Ejecutar pruebas de mutación (Pitest)
   - task: Gradle@2
@@ -50,7 +50,7 @@ steps:
       gradleOptions: '-Dfile.encoding=UTF-8'
       tasks: 'pitest'
 
-  # Paso 6 (Opcional): Análisis con SonarQube
+  # Paso 6: Análisis con SonarQube
   - task: Gradle@2
     inputs:
       workingDirectory: '$(projectDir)'

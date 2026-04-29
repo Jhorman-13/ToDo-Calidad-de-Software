@@ -1,9 +1,10 @@
 plugins {
     java
-    id("org.springframework.boot") version "3.2.4" // Ajusta a la versión que uses
+    id("org.springframework.boot") version "3.2.4"
     id("io.spring.dependency-management") version "1.1.4"
     id("org.sonarqube") version "4.4.1.3373"
-    jacoco // <--- 1. Activamos JaCoCo para medir cobertura
+    jacoco
+    id("info.solidsoft.pitest") version "1.15.0" // 1. Añadimos Pitest de vuelta
 }
 
 group = "org.example"
@@ -27,7 +28,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
-    // Asegúrate de tener estas para tus pruebas de Cucumber y JUnit
+    // Pruebas de Cucumber y JUnit
     testImplementation("io.cucumber:cucumber-java:7.15.0")
     testImplementation("io.cucumber:cucumber-junit-platform-engine:7.15.0")
     testImplementation("org.junit.platform:junit-platform-suite")
@@ -38,33 +39,46 @@ dependencies {
     testRuntimeOnly("org.junit.vintage:junit-vintage-engine")
 }
 
-// 2. Configuramos la tarea de test para que genere reportes JaCoCo
+// 2. Tarea genérica de pruebas con JaCoCo
 tasks.test {
     useJUnitPlatform()
-    finalizedBy(tasks.jacocoTestReport) // Siempre genera el reporte al terminar los tests
+    finalizedBy(tasks.jacocoTestReport)
 }
 
-// 3. Configuramos el formato del reporte (Sonar necesita XML)
+// 3. Tarea específica para Pruebas de Aceptación (El Paso 4 que te faltaba)
+tasks.register<Test>("acceptanceTest") {
+    description = "Ejecuta las pruebas de aceptación (Cucumber)"
+    group = "verification"
+    useJUnitPlatform()
+    // Esto asegura que guarde los reportes en la carpeta que Azure espera
+    reports {
+        junitXml.required.set(true)
+    }
+}
+
+// 4. Reporte de Cobertura
 tasks.jacocoTestReport {
     dependsOn(tasks.test)
     reports {
         xml.required.set(true)
         csv.required.set(false)
-        html.required.set(true) // Para que puedas verlo tú en build/reports/jacoco/test/html/index.html
+        html.required.set(true)
     }
 }
 
-// 4. Configuración de Sonar vinculada a los reportes de JaCoCo
+// 5. Configuración de SonarQube
 sonar {
     properties {
         property("sonar.projectKey", "ToDo")
         property("sonar.host.url", "http://localhost:9000")
-        // No olvides tener tu TOKEN a mano
-
-        // ESTA ES LA LÍNEA MÁGICA: Conecta Sonar con los resultados de JaCoCo
-        property("sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml")
-
-        // Opcional: Excluye clases que no tienen lógica (como la clase principal) para subir el %
+        property("sonar.coverage.jacoco.xmlReportPaths", "${project.layout.buildDirectory.get()}/reports/jacoco/test/jacocoTestReport.xml")
         property("sonar.exclusions", "**/Principal.java, **/Tarea.java")
     }
+}
+
+// 6. Configuración básica de Pitest (para que no falle buscando clases)
+pitest {
+    targetClasses.set(setOf("org.example.*"))
+    threads.set(4)
+    outputFormats.set(setOf("XML", "HTML"))
 }
