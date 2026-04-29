@@ -8,7 +8,7 @@ variables:
   projectDir: '.'
 
   #--- Variables agregadas para JMeter ---
-  jmxFile: 'tests/stress_test_pipelines.jmx'
+  jmxFile: 'tests/stress_test_pipeline.jmx'
   resultsFolder: 'results'
   resultsFile: '$(resultsFolder)/results.jtl'
   htmlReport: '$(resultsFolder)/html'
