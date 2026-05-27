@@ -22,7 +22,7 @@ steps:
     displayName: "Verificar versión de Java (usando el del agente local)"
     workingDirectory: $(projectDir)
 
-  # Paso 3: Ejecutar compilación y pruebas unitarias
+  # Paso 3: Ejecutar compilación y pruebas unitarias (Genera el .jar)
   - task: Gradle@2
     inputs:
       workingDirectory: '$(projectDir)'
@@ -75,16 +75,19 @@ steps:
       mkdir $(resultsFolder)
     displayName: "Preparar directorios JMeter"
 
-  # Paso 9: Iniciar Aplicación Spring Boot
+  # Paso 9: Docker - Construir imagen y levantar contenedor
   - script: |
-      echo "Arrancando la aplicación..."
-      start /B java -jar build/libs/ToDo-1.0-SNAPSHOT.jar
+      echo "Construyendo la imagen Docker de la app usando el Dockerfile..."
+      docker build -t lockitodo-app:latest .
       
-      echo "Esperando 15 segundos a que Spring Boot despierte..."
+      echo "Levantando el contenedor en segundo plano en el puerto 8080..."
+      docker run -d -p 8080:8080 --name todo-container lockitodo-app:latest
+      
+      echo "Esperando 15 segundos a que la app dentro del contenedor despierte..."
       ping 127.0.0.1 -n 15 > nul
-    displayName: "Iniciar Aplicación Spring Boot"
+    displayName: "Docker: Construir y Levantar App"
 
-  # Paso 10: Ejecutar prueba de rendimiento con JMeter
+  # Paso 10: Ejecutar prueba de rendimiento con JMeter (Ataca al contenedor Docker)
   - script: |
       echo "Ejecutando prueba de rendimiento con JMeter..."
       jmeter.bat -n -t "$(jmxFile)" -l "$(resultsFile)" -e -o "$(htmlReport)"
@@ -98,10 +101,13 @@ steps:
       ArtifactName: 'jmeter-report'
       publishLocation: 'Container'
 
-  # Paso 12: Apagar la aplicación (A prueba de balas)
+  # Paso 12: Docker - Detener y remover contenedor (¡Limpieza automatizada!)
   - script: |
-      echo "Apagando el servidor Spring Boot en el puerto 8080..."
-      for /f "tokens=5" %%a in ('netstat -aon ^| find ":8080" ^| find "LISTENING"') do taskkill /f /pid %%a > nul 2>&1
+      echo "Apagando el contenedor todo-container..."
+      docker stop todo-container > nul 2>&1
+      
+      echo "Eliminando el contenedor de la memoria..."
+      docker rm todo-container > nul 2>&1
       exit 0
-    displayName: "Apagar Servidor Spring Boot"
+    displayName: "Docker: Limpiar Contenedor"
     condition: always()
