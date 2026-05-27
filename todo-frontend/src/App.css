@@ -1,0 +1,90 @@
+/* src/App.css */
+
+/* Estilos generales del body para el modo oscuro */
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: #121212;
+  color: rgba(255, 255, 255, 0.87);
+}
+
+#root {
+  width: 100%;
+}
+
+/* --- Animaciones base para TODOS los botones --- */
+button {
+  /* Transición suave para cualquier cambio (color, transformación, sombra) */
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+/* Efecto al hacer clic en cualquier botón */
+button:active {
+  transform: scale(0.95); /* Se encoge un poquito */
+}
+
+/* =========================================
+   1. Botón Principal del Formulario (Guardar)
+   ========================================= */
+.btn-guardar {
+  background-color: #646cff;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 16px;
+  margin-top: 5px;
+  width: 100%; /* Mantiene el ancho completo */
+}
+
+/* Efecto Hover Guardar */
+.btn-guardar:hover {
+  background-color: #7c83ff; /* Color más claro */
+  box-shadow: 0 4px 15px rgba(100, 108, 255, 0.4); /* Sombra azul */
+  transform: translateY(-2px); /* Se eleva ligeramente */
+}
+
+/* =========================================
+   2. Estilos comunes para botones de lista
+   ========================================= */
+.btn-lista {
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* Efecto Hover común para botones de lista (crecer un poco) */
+.btn-lista:hover {
+  transform: scale(1.1); /* Agranda el botón un 10% */
+}
+
+/* Botón Completar (Verde) */
+.btn-completar {
+  background-color: #2e7d32;
+}
+
+/* Efecto Hover Completar */
+.btn-completar:hover {
+  background-color: #388e3c; /* Verde más claro */
+  box-shadow: 0 2px 8px rgba(46, 125, 50, 0.5);
+}
+
+/* Botón Eliminar (Rojo) */
+.btn-eliminar {
+  background-color: #d32f2f;
+}
+
+/* Efecto Hover Eliminar */
+.btn-eliminar:hover {
+  background-color: #e53935; /* Rojo más claro */
+  box-shadow: 0 2px 8px rgba(211, 47, 47, 0.5);
+}
