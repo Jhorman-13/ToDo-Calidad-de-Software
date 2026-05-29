@@ -6,7 +6,8 @@ pool:
 
 variables:
   projectDir: '.'
-  frontDir: '$(projectDir)/SistemaDeAutenticacion/frontend'
+  # AQUÍ ESTÁ EL TRUCO: Apuntar a tu carpeta propia donde rescatamos los archivos
+  frontDir: '$(projectDir)/todo-frontend'
 
   #--- Variables para JMeter ---
   jmxFile: 'tests/stress_test_pipeline.jmx'
@@ -15,7 +16,7 @@ variables:
   htmlReport: '$(resultsFolder)/html'
 
 steps:
-  # Paso 1: Chequear el código (con submódulos habilitados)
+  # Paso 1: Chequear el código (con submódulos limpios)
   - checkout: self
     fetchDepth: 0
     submodules: true
@@ -75,20 +76,20 @@ steps:
     displayName: "Docker: Limpiar Ecosistema Anterior"
     workingDirectory: $(projectDir)
 
-  # Paso 9: Levantar todo el ecosistema con Docker Compose (Multi-Frontend + Back)
+  # Paso 9: Levantar todo el ecosistema con Docker Compose
   - script: |
       docker-compose up -d --build
       powershell -command "Start-Sleep -Seconds 20"
     displayName: "Docker: Levantar Ecosistema Completo"
     workingDirectory: $(projectDir)
 
-  # Paso 10: Instalar dependencias de Node en el frontend de Cypress
+  # Paso 10: Instalar dependencias de Node en TU carpeta todo-frontend
   - script: |
       npm install
     displayName: "Cypress: Instalar Dependencias"
     workingDirectory: $(frontDir)
 
-  # Paso 11: Correr la ruta crítica en modo Headless
+  # Paso 11: Correr la ruta crítica desde tu carpeta
   - script: |
       npx cypress run --spec "cypress/e2e/ruta_critica.cy.js"
     displayName: "Cypress: Ejecutar Pruebas E2E (Ruta Crítica)"
