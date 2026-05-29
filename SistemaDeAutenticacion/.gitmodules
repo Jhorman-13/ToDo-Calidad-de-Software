@@ -1,0 +1,3 @@
+[submodule "CalculadoraFinanciera"]
+	path = CalculadoraFinanciera
+	url = https://github.com/Santiago-Cardenas-I/CalculadoraFinanciera.git

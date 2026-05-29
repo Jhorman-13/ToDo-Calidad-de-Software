@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  # BACKEND EN SPRING BOOT
+  backend:
+    build: .
+    container_name: spring-backend
+    ports:
+      - "8080:8080"
+
+  # FRONTEND EN REACT
+  frontend:
+    build: ./frontend
+    container_name: react-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+  # BACKEND DE LA CALCULADORA
+  backend-calculadora:
+    # Ajusta esta ruta según cómo se llame la carpeta del back de Santiago
+    build: ./CalculadoraFinanciera/backend
+    container_name: spring-backend-calculadora
+    ports:
+      - "8081:8080"
+
+  # FRONTEND DE LA CALCULADORA
+  frontend-calculadora:
+    # Ajusta esta ruta según cómo se llame la carpeta del front de Santiago
+    build: ./CalculadoraFinanciera/frontend
+    container_name: react-frontend-calculadora
+    ports:
+      - "3001:80"
+    depends_on:
+      - backend-calculadora

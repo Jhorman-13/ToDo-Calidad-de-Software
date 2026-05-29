@@ -1,0 +1,99 @@
+trigger:
+  - main
+
+pool:
+  name: LocalPool   # Agente local registrado en Azure DevOps
+
+variables:
+  projectDir: '.'
+
+steps:
+  # Paso 1: Chequear el código
+  - checkout: self
+    fetchDepth: 0
+    submodules: true
+
+  # Paso 2: Verificar versión de Java instalada en el agente local
+  - script: java -version
+    displayName: "Verificar versión de Java (usando el del agente local)"
+    workingDirectory: $(projectDir)
+
+  # Paso 3: Ejecutar compilación y pruebas unitarias
+  - task: Gradle@2
+    inputs:
+      workingDirectory: '$(projectDir)'
+      gradleWrapperFile: '$(projectDir)/gradlew'
+      gradleOptions: '-Dfile.encoding=UTF-8 -Xmx3072m'
+      publishJUnitResults: true
+      testResultsFiles: '**/build/test-results/test/TEST-*.xml'
+      tasks: 'clean build test'
+
+  # Paso 4: Ejecutar pruebas de aceptación (Cucumber)
+  - task: Gradle@2
+    inputs:
+      workingDirectory: '$(projectDir)'
+      gradleWrapperFile: '$(projectDir)/gradlew'
+      gradleOptions: '-Dfile.encoding=UTF-8'
+      tasks: 'acceptanceTest'
+      testResultsFiles: '**/build/test-results/acceptanceTest/TEST-*.xml'
+      publishJUnitResults: true
+
+  # Paso 5: Ejecutar pruebas de mutación (Pitest)
+  - task: Gradle@2
+    inputs:
+      workingDirectory: '$(projectDir)'
+      gradleWrapperFile: '$(projectDir)/gradlew'
+      gradleOptions: '-Dfile.encoding=UTF-8'
+      tasks: 'pitest'
+
+  # Paso 6 (Opcional): Análisis con SonarQube
+  - task: Gradle@2
+    inputs:
+      workingDirectory: '$(projectDir)'
+      gradleWrapperFile: '$(projectDir)/gradlew'
+      gradleOptions: '-Dfile.encoding=UTF-8'
+      tasks: 'sonar'
+    env:
+      SONAR_TOKEN: $(SONAR_TOKEN)
+
+  #Paso 7: Publicar el Artefacto (Guardar el .jar de la aplicación)
+  - task: PublishPipelineArtifact@1
+    displayName: 'Save Artifact in Azure'
+    inputs:
+      targetPath: '$(projectDir)/build/libs'
+      artifact: 'SistemaDeAutenticacion'
+      publishLocation: 'pipeline'
+      SONAR_TOKEN: $(SONAR_TOKEN)
+
+  # Paso 8: Apagar y limpiar contenedores anteriores si existen
+  - script: |
+      docker-compose down
+    displayName: "Limpiar entorno Docker anterior"
+    workingDirectory: $(projectDir)
+
+  # Paso 9: Construir imágenes y levantar contenedores (Back y Front)
+  - script: |
+      docker-compose up -d --build
+      powershell -command "Start-Sleep -Seconds 20"
+    displayName: "Levantar aplicacion con Docker Compose"
+    workingDirectory: $(projectDir)
+
+  #Paso 10 Levantar app
+  - script: |
+      start /B gradlew.bat bootRun
+      powershell -command "Start-Sleep -Seconds 20"
+    displayName: "Levantar aplicacion"
+
+  #Paso 11: Ejecutar JMeter
+  - script: |
+      mkdir jmeter_results
+      jmeter.bat -n -t tests/stress_test_pipeline.jmx -l jmeter_results/results.jtl -e -o jmeter_results/report
+    displayName: "Pruebas de carga JMeter"
+
+  #Paso 12: Guardar resultados completos (JTL + Reporte HTML)
+  - task: PublishPipelineArtifact@1
+    displayName: "Resultados JMeter"
+    inputs:
+      targetPath: '$(projectDir)/jmeter_results'
+      artifact: 'JMeterResults'
+      publishLocation: 'pipeline'
