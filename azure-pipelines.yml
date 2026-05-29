@@ -119,3 +119,4 @@ steps:
       docker-compose down
     displayName: "Docker: Apagar Ecosistema"
     condition: always()
+# Forzar ejecucion del pipeline desde consola
