@@ -7,7 +7,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/tareas")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "*")
 public class Controller {
 
     private final Gestor gestor;

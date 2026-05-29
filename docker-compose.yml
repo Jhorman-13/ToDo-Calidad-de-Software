@@ -1,18 +1,63 @@
+version: '3.8'
+
 services:
-  spring-backend:
-    build:
-      context: . #El backend está en esta misma carpeta raíz
-    container_name: spring-backend
+  # 1. BACKEND DEL LOGIN (Thomas)
+  login-backend:
+    build: ./SistemaDeAutenticacion
+    container_name: login-backend
     ports:
       - "8080:8080"
-    restart: unless-stopped
 
-  react-frontend:
-    build:
-      context: ./todo-frontend # Aquí entra a la subcarpeta para el front
-    container_name: react-frontend
+  # 2. FRONTEND DEL LOGIN (Donde está tu Dashboard)
+  login-frontend:
+    build: ./SistemaDeAutenticacion/frontend
+    container_name: login-frontend
     ports:
-      - "5174:80" # Mapeado al puerto 80 del contenedor al 5174 del host
+      - "3002:80"
     depends_on:
-      - spring-backend
-    restart: unless-stopped
+      - login-backend
+
+  # 3. BACKEND DE TU GESTOR DE TAREAS
+  todo-backend:
+    build: .
+    container_name: todo-backend
+    ports:
+      - "8081:8080"
+
+  # 4. FRONTEND DE TU GESTOR DE TAREAS (LockiToDo)
+  todo-frontend:
+    build: ./todo-frontend
+    container_name: todo-frontend
+    ports:
+      - "3001:80"
+    depends_on:
+      - todo-backend
+
+  # 3. CALCULADORA FINANCIERA
+
+  #calculadora-backend:
+    #container_name: calculadora-backend
+      #build:
+      #context: ./CalculadoraFinanciera # El backend de la calculadora
+      #dockerfile: Dockerfile
+      #ports:
+      #- "8082:8080" # La API de la calculadora corre en localhost:8082
+      #networks:
+      #- ecosistema-network
+
+    #calculadora-frontend:
+    #container_name: calculadora-frontend
+      #build:
+      #context: ./CalculadoraFinanciera/calculadora-frontend # El frontend de la calculadora
+      #dockerfile: Dockerfile
+      #ports:
+      #- "3001:80" # La interfaz de la calculadora se abre en localhost:3001
+      #networks:
+      #- ecosistema-network
+      #depends_on:
+      #- calculadora-backend
+
+networks:
+  ecosistema-network:
+    name: ecosistema-network
+    driver: bridge

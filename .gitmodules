@@ -1,0 +1,6 @@
+[submodule "SistemaDeAutenticacion"]
+	path = SistemaDeAutenticacion
+	url = https://github.com/Thomasggrisales/SistemaDeAutenticacion
+[submodule "CalculadoraFinanciera"]
+	path = CalculadoraFinanciera
+	url = https://github.com/Santiago-Cardenas-I/CalculadoraFinanciera.git
