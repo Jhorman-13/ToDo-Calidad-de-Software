@@ -6,7 +6,6 @@ pool:
 
 variables:
   projectDir: '.'
-  # AQUÍ ESTÁ EL TRUCO: Apuntar a tu carpeta propia donde rescatamos los archivos
   frontDir: '$(projectDir)/todo-frontend'
 
   #--- Variables para JMeter ---
@@ -16,12 +15,12 @@ variables:
   htmlReport: '$(resultsFolder)/html'
 
 steps:
-  # Paso 1: Chequear el código (con submódulos limpios)
+  # Paso 1: Chequear el código
   - checkout: self
     fetchDepth: 0
     submodules: true
 
-  # Paso 2: Verificar versión de Java instalada en el agente local
+  # Paso 2: Verificar versión de Java
   - script: java -version
     displayName: "Verificar versión de Java (usando el del agente local)"
     workingDirectory: $(projectDir)
@@ -70,27 +69,28 @@ steps:
       artifact: 'LockiToDo-App'
       publishLocation: 'pipeline'
 
-  # Paso 8: Apagar y limpiar contenedores anteriores si existen
+  # Paso 8: Apagar y limpiar contenedores anteriores
   - script: |
       docker-compose down
     displayName: "Docker: Limpiar Ecosistema Anterior"
     workingDirectory: $(projectDir)
 
-  # Paso 9: Levantar todo el ecosistema con Docker Compose
+  # Paso 9: Levantar todo el ecosistema con Docker Compose (40s de espera)
   - script: |
       docker-compose up -d --build
-      powershell -command "Start-Sleep -Seconds 20"
+      powershell -command "Start-Sleep -Seconds 40"
     displayName: "Docker: Levantar Ecosistema Completo"
     workingDirectory: $(projectDir)
 
-  # Paso 10: Instalar dependencias de Node en TU carpeta todo-frontend
+  # Paso 10: Instalar dependencias de Node
   - script: |
       npm install
     displayName: "Cypress: Instalar Dependencias"
     workingDirectory: $(frontDir)
 
-  # Paso 11: Correr la ruta crítica desde tu carpeta
+  # Paso 11: Correr la ruta crítica activando logs detallados de depuración en CMD
   - script: |
+      set DEBUG=cypress:cli,cypress:runner
       npx cypress run --spec "cypress/e2e/ruta_critica.cy.js"
     displayName: "Cypress: Ejecutar Pruebas E2E (Ruta Crítica)"
     workingDirectory: $(frontDir)
