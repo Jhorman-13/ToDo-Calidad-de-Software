@@ -15,17 +15,17 @@ variables:
   htmlReport: '$(resultsFolder)/html'
 
 steps:
-  # Paso 1: Chequear el código
+  # Paso 1: Chequear el cï¿½digo
   - checkout: self
     fetchDepth: 0
     submodules: true
 
-  # Paso 2: Verificar versión de Java
+  # Paso 2: Verificar versiï¿½n de Java
   - script: java -version
-    displayName: "Verificar versión de Java (usando el del agente local)"
+    displayName: "Verificar versiï¿½n de Java (usando el del agente local)"
     workingDirectory: $(projectDir)
 
-  # Paso 3: Ejecutar compilación y pruebas unitarias
+  # Paso 3: Ejecutar compilaciï¿½n y pruebas unitarias
   - task: Gradle@2
     inputs:
       workingDirectory: '$(projectDir)'
@@ -35,7 +35,7 @@ steps:
       testResultsFiles: '**/build/test-results/test/TEST-*.xml'
       tasks: 'clean build test'
 
-  # Paso 4: Ejecutar pruebas de aceptación
+  # Paso 4: Ejecutar pruebas de aceptaciï¿½n
   - task: Gradle@2
     inputs:
       workingDirectory: '$(projectDir)'
@@ -45,7 +45,7 @@ steps:
       testResultsFiles: '**/build/test-results/acceptanceTest/TEST-*.xml'
       publishJUnitResults: true
 
-  # Paso 5: Ejecutar pruebas de mutación
+  # Paso 5: Ejecutar pruebas de mutaciï¿½n
   - task: Gradle@2
     inputs:
       workingDirectory: '$(projectDir)'
@@ -53,7 +53,7 @@ steps:
       gradleOptions: '-Dfile.encoding=UTF-8'
       tasks: 'pitest'
 
-  # Paso 6: Análisis con SonarQube
+  # Paso 6: Anï¿½lisis con SonarQube
   - task: Gradle@2
     inputs:
       workingDirectory: '$(projectDir)'
@@ -88,11 +88,11 @@ steps:
     displayName: "Cypress: Instalar Dependencias"
     workingDirectory: $(frontDir)
 
-  # Paso 11: Correr la ruta crítica activando logs detallados de depuración en CMD
+  # Paso 11: Correr la ruta crï¿½tica activando logs detallados de depuraciï¿½n en CMD
   - script: |
       set DEBUG=cypress:cli,cypress:runner
       npx cypress run --spec "cypress/e2e/ruta_critica.cy.js"
-    displayName: "Cypress: Ejecutar Pruebas E2E (Ruta Crítica)"
+    displayName: "Cypress: Ejecutar Pruebas E2E (Ruta Crï¿½tica)"
     workingDirectory: $(frontDir)
 
   # Paso 12: Preparar directorios de resultados
@@ -104,7 +104,7 @@ steps:
   # Paso 13: Ejecutar pruebas de carga con JMeter
   - script: |
       jmeter.bat -n -t "$(jmxFile)" -l "$(resultsFile)" -e -o "$(htmlReport)"
-    displayName: "JMeter: Ejecución de Prueba de Rendimiento"
+    displayName: "JMeter: Ejecuciï¿½n de Prueba de Rendimiento"
 
   # Paso 14: Publicar el reporte HTML final en Azure
   - task: PublishBuildArtifacts@1
@@ -114,9 +114,15 @@ steps:
       ArtifactName: 'jmeter-report'
       publishLocation: 'Container'
 
-  # Paso 15: Apagar contenedores al finalizar de forma segura
+  # Paso 15: Si las pruebas FALLAN, apagamos
   - script: |
       docker-compose down
-    displayName: "Docker: Apagar Ecosistema"
-    condition: always()
-# Forzar ejecucion del pipeline desde consola
+    displayName: "Rollback: Apagar entorno por fallo en pruebas"
+    workingDirectory: $(projectDir)
+    condition: failed()
+
+  # Paso 16: Si las pruebas PASAN, anunciamos el despliegue exitoso
+  - script: |
+      echo "Â¡Las pruebas pasaron en verde! El ecosistema LockiToDo se queda corriendo en producciÃ³n."
+    displayName: "Despliegue Exitoso"
+    condition: succeeded()
